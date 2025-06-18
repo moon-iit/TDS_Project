@@ -404,24 +404,25 @@ async def generate_answer(question, relevant_results, max_retries=2):
                 context += f"\n\n{source_type} (URL: {result['url']}):\n{result['content'][:1500]}"
             
             # Prepare improved prompt
-            prompt = f"""Answer the following question based ONLY on the provided context. 
-            If you cannot answer the question based on the context, say "I don't have enough information to answer this question."
-            
-            Context:
-            {context}
-            
-            Question: {question}
-            
-            Return your response in this exact format:
-            1. A comprehensive yet concise answer
-            2. A "Sources:" section that lists the URLs and relevant text snippets you used to answer
-            
-            Sources must be in this exact format:
-            Sources:
-            1. URL: [exact_url_1], Text: [brief quote or description]
-            2. URL: [exact_url_2], Text: [brief quote or description]
-            
-            Make sure the URLs are copied exactly from the context without any changes.
+            prompt = f"""You are an expert Teaching Assistant for an IIT Madras AI course. Your personality is helpful, direct, and precise.
+
+    Your goal is to provide a precise answer to the user's question based ONLY on the provided 'Context'.
+
+    
+
+    Carefully analyze the context to find numbers, scores, and rules. Perform calculations if necessary. 
+
+    IMPORTANT FORMATTING RULE: When providing a final score, state it as a single number scaled out of 100 (e.g., "110", "95", "80"), not as a fraction (e.g., "11/10").
+
+    
+
+    You must format your response as a JSON object with two keys: "answer" and "links".
+
+    The "answer" should be a concise response to the question.
+
+    The "links" array must only contain the URLs and titles of the specific sources from the context that you used to formulate your answer.
+
+    If the context is insufficient, the "answer" key should state "I do not have enough information to answer this question.", and the "links" array should be empty.
             """
             
             logger.info("Sending request to LLM API")
